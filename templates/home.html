@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+    <div class="hero-main">
+        <h1 class="hero-title">Check the weather in seconds</h1>
+        <p class="hero-subtitle">
+            Minimal, clean and dark – like a good dashboard. Type a city and get
+            5-day forecast, temperature chart, map and more.
+        </p>
+
+        <div class="search-wrapper">
+            <div class="search-box">
+                <input
+                  type="text"
+                  id="search-input"
+                  class="search-input"
+                  placeholder="Search city..."
+                  autocomplete="off"
+                />
+                <button id="search-button" class="primary-button">Search</button>
+            </div>
+            <div id="suggestions" class="suggestions"></div>
+        </div>
+    </div>
+</section>
+
+<section id="content-section" class="content-section hidden">
+    <div class="layout-grid">
+        <!-- LEFT: main cards -->
+        <div class="left-column">
+            <div id="current-weather" class="card card-main hidden"></div>
+
+            <div id="metrics" class="card metrics-card hidden"></div>
+
+            <div class="card">
+                <h2 class="section-title">5-Day Forecast</h2>
+                <div id="forecast-cards" class="forecast-cards"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="section-title">Temperature Chart</h2>
+                    <span class="card-caption">3-hour steps for the next 5 days</span>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="temp-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: map + history -->
+        <div class="right-column">
+            <div class="card">
+                <h2 class="section-title">Map</h2>
+                <div id="map" class="map"></div>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title">Previous searches</h2>
+                <ul id="prev-list" class="prev-list"></ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

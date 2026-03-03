@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title or 'Q Weather' }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+
+    <!-- Leaflet -->
+<!-- Leaflet -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+/>
+<script
+  src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+></script>
+
+    <!-- Main JS (defer so HTML renders first) -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</head>
+<body class="dark">
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="{{ url_for('home') }}" class="logo">Q&nbsp;Weather</a>
+        </div>
+
+        <nav class="nav-center">
+            <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+            <a href="{{ url_for('saved') }}" class="nav-link">Saved</a>
+            <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
+        </nav>
+
+        <div class="nav-right">
+            <select id="lang-select" class="lang-select">
+                <option value="en">EN</option>
+                <option value="ru">RU</option>
+                <option value="kk">KZ</option>
+            </select>
+
+            <button id="theme-toggle" class="icon-button" title="Toggle theme">🌙</button>
+
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <main class="page">
+        <div class="page-inner">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>&copy; {{ 2026 }} Q Weather. Made for study & chill.</span>
+        </div>
+    </footer>
+</body>
+</html>
