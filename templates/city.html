@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+    <div class="hero-main">
+        <h1 class="hero-title">City Details</h1>
+        <p class="hero-subtitle">
+            Cached weather snapshot from your database.
+        </p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="layout-grid">
+        <div class="left-column">
+            <div class="card card-main">
+                <div class="weather-top-row">
+                    <div>
+                        <div class="weather-city">
+                            {{ city.name }}{% if city.country %}, {{ city.country }}{% endif %}
+                        </div>
+                        <div class="weather-time">
+                            {% if city.last_updated %}
+                                Last updated: {{ city.last_updated }}
+                            {% else %}
+                                No update time available
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="weather-main">
+                    <div class="weather-main-icon">
+                        {% if city.icon_code %}
+                            <img src="https://openweathermap.org/img/wn/{{ city.icon_code }}@2x.png" alt="">
+                        {% else %}
+                            <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.06)"></div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="weather-main-temp">
+                            {% if city.temp is not none %}{{ city.temp|round|int }}°{% else %}--{% endif %}
+                        </div>
+                        <div class="weather-main-desc">
+                            {{ city.description or "No description" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card metrics-card">
+                <div class="metric-item">
+                    <span class="metric-label">Humidity</span>
+                    <span class="metric-value">
+                        {% if city.humidity is not none %}{{ city.humidity }}%{% else %}--{% endif %}
+                    </span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Wind</span>
+                    <span class="metric-value">
+                        {% if city.wind_speed is not none %}{{ city.wind_speed }} m/s{% else %}--{% endif %}
+                    </span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Pressure</span>
+                    <span class="metric-value">
+                        {% if city.pressure is not none %}{{ city.pressure }} hPa{% else %}--{% endif %}
+                    </span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Coordinates</span>
+                    <span class="metric-value">
+                        {% if city.lat is not none and city.lon is not none %}
+                            {{ "%.3f"|format(city.lat) }}, {{ "%.3f"|format(city.lon) }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title">Raw Cache (debug / project demo)</h2>
+                <p class="card-caption">
+                    This is useful for teacher/demo to show data is really stored in DB.
+                </p>
+                <pre style="white-space:pre-wrap; word-break:break-word; color:var(--fg-muted); font-size:.8rem; margin-top:.75rem;">
+{{ city.data_json if city.data_json else "No cached JSON yet." }}
+                </pre>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="card">
+                <h2 class="section-title">Actions</h2>
+                <div style="display:flex; flex-direction:column; gap:.6rem;">
+                    <a href="{{ url_for('home') }}" class="nav-link" style="display:inline-block; width:fit-content;">← Back to Home</a>
+                    <a href="{{ url_for('saved') }}" class="nav-link" style="display:inline-block; width:fit-content;">Saved Cities</a>
+                    <a href="{{ url_for('contact') }}" class="nav-link" style="display:inline-block; width:fit-content;">Contact</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title">Map Coordinates</h2>
+                <p class="hero-subtitle" style="margin:0;">
+                    {% if city.lat is not none and city.lon is not none %}
+                        Lat: {{ city.lat }}<br>
+                        Lon: {{ city.lon }}
+                    {% else %}
+                        Coordinates are not stored yet.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

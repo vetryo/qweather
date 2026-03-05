@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+    <div class="hero-main">
+        <h1 class="hero-title">Contact</h1>
+        <p class="hero-subtitle">
+            Send feedback, bug reports, or suggestions for Q Weather.
+        </p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="layout-grid">
+        <div class="left-column">
+            <div class="card">
+                <h2 class="section-title">Send a message</h2>
+
+                <form action="{{ url_for('api_contact') }}" method="post" style="display:flex; flex-direction:column; gap:.9rem; margin-top:.75rem;">
+                    <div>
+                        <label for="name" class="metric-label" style="display:block; margin-bottom:.35rem;">Name</label>
+                        <input id="name" name="name" type="text" required class="search-input" style="width:100%; border-radius:12px;">
+                    </div>
+
+                    <div>
+                        <label for="email" class="metric-label" style="display:block; margin-bottom:.35rem;">Email</label>
+                        <input id="email" name="email" type="email" required class="search-input" style="width:100%; border-radius:12px;">
+                    </div>
+
+                    <div>
+                        <label for="message" class="metric-label" style="display:block; margin-bottom:.35rem;">Message</label>
+                        <textarea id="message" name="message" rows="6" required
+                                  class="search-input"
+                                  style="width:100%; border-radius:12px; resize:vertical; padding-top:.8rem;"></textarea>
+                    </div>
+
+                    <div style="display:flex; gap:.75rem; align-items:center; flex-wrap:wrap;">
+                        <button type="submit" class="primary-button">Send message</button>
+                        <span class="card-caption">Stored in database via <code>/api/contact</code></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="card">
+                <h2 class="section-title">Project Info</h2>
+                <p class="hero-subtitle" style="margin:0;">
+                    Q Weather is a weather dashboard built by Kadr Q.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title">Quick Links</h2>
+                <div style="display:flex; flex-direction:column; gap:.5rem;">
+                    <a href="{{ url_for('home') }}" class="nav-link" style="display:inline-block; width:fit-content;">Home</a>
+                    <a href="{{ url_for('saved') }}" class="nav-link" style="display:inline-block; width:fit-content;">Saved Cities</a>
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('login') }}" class="nav-link" style="display:inline-block; width:fit-content;">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

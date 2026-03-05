@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+    <div class="hero-main">
+        <h1 class="hero-title">Saved Cities</h1>
+        <p class="hero-subtitle">
+            Your favorite places in one panel. Guest mode can use local storage, account mode can sync to database.
+        </p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="card">
+        {% if current_user.is_authenticated %}
+            <h2 class="section-title">Your saved cities</h2>
+            <p class="card-caption">
+                If you already connected the API route `/api/saved`, this page can be populated with JS.
+            </p>
+
+            <div id="saved-cities-grid" class="forecast-cards" style="margin-top: 1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                <div class="forecast-card">
+                    <div class="forecast-day">Ready</div>
+                    <div class="small">Connect this page to <code>/api/saved</code></div>
+                </div>
+            </div>
+        {% else %}
+            <h2 class="section-title">Login required</h2>
+            <p class="hero-subtitle" style="margin-bottom: 1rem;">
+                You are not logged in. Sign in to save cities in your account.
+            </p>
+            <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+                <a href="{{ url_for('login') }}" class="primary-button" style="text-decoration:none; display:inline-flex; align-items:center;">Login</a>
+                <a href="{{ url_for('register') }}" class="nav-link" style="display:inline-flex; align-items:center;">Create account</a>
+                <a href="{{ url_for('home') }}" class="nav-link" style="display:inline-flex; align-items:center;">Back home</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
