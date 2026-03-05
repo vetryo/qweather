@@ -12,7 +12,7 @@ import requests
 
 # configuration and initialization
 app = Flask(__name__)
-app.config.from_pyfile('config.py')
+app.config.from_pyfile(os.path.join(app.root_path, "config.py"))
 db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
