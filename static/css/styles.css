@@ -585,3 +585,7 @@ code {
     border-radius: 8px;
     padding: 0.12rem 0.35rem;
 }
+.icon-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

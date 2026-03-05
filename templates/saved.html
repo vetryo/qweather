@@ -5,7 +5,7 @@
     <div class="hero-main">
         <h1 class="hero-title">Saved Cities</h1>
         <p class="hero-subtitle">
-            Your favorite places in one panel. Guest mode can use local storage, account mode can sync to database.
+            Your favorite places in one panel. Guest mode can use local storage, account mode syncs to database.
         </p>
     </div>
 </section>
@@ -15,13 +15,15 @@
         {% if current_user.is_authenticated %}
             <h2 class="section-title">Your saved cities</h2>
             <p class="card-caption">
-                If you already connected the API route `/api/saved`, this page can be populated with JS.
+                Managed from your account via <code>/api/saved</code>.
             </p>
 
-            <div id="saved-cities-grid" class="forecast-cards" style="margin-top: 1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-                <div class="forecast-card">
-                    <div class="forecast-day">Ready</div>
-                    <div class="small">Connect this page to <code>/api/saved</code></div>
+            <div id="saved-cities-grid"
+                 class="forecast-cards"
+                 style="margin-top: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                <div class="forecast-card" style="text-align:left; padding:1rem;">
+                    <div class="forecast-day">Loading...</div>
+                    <div class="small">Fetching saved cities</div>
                 </div>
             </div>
         {% else %}
@@ -37,5 +39,9 @@
         {% endif %}
     </div>
 </section>
+
+{% if current_user.is_authenticated %}
+<script src="{{ url_for('static', filename='js/saved.js') }}"></script>
+{% endif %}
 
 {% endblock %}
