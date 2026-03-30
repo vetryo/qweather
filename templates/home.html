@@ -1,67 +1,138 @@
 {% extends "base.html" %}
-{% block content %}
 
-<section class="hero">
+{% block title %}QWeather | Live Forecast{% endblock %}
+{% block meta_description %}Search global cities and view current conditions, 5-day forecast, chart trends, and map context in one polished dashboard.{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block vendor_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+{% endblock %}
+
+{% block content %}
+<section class="hero hero-home">
     <div class="hero-main">
-        <h1 class="hero-title">Check the weather in seconds</h1>
-        <p class="hero-subtitle">
-            Minimal, clean and dark – like a good dashboard. Type a city and get
-            5-day forecast, temperature chart, map and more.
+        <p class="eyebrow" data-i18n="home-eyebrow">Weather Intelligence</p>
+        <h1 class="hero-title" data-i18n="home-title">Plan the day with confidence.</h1>
+        <p class="hero-subtitle" data-i18n="home-subtitle">
+            Search any city and instantly get a clean, high-signal forecast view with current conditions,
+            trend chart, map context, and quick saving.
         </p>
 
-        <div class="search-wrapper">
+        <form id="search-form" class="search-wrapper" autocomplete="off">
+            <label for="search-input" class="input-label" data-i18n="home-search-label">City search</label>
             <div class="search-box">
                 <input
                   type="text"
                   id="search-input"
                   class="search-input"
-                  placeholder="Search city..."
+                  placeholder="Try: Almaty, London, Tokyo"
                   autocomplete="off"
-                />
-                <button id="search-button" class="primary-button">Search</button>
+                  aria-describedby="search-help"
+                  aria-controls="suggestions"
+                >
+                <button id="search-button" class="btn btn-primary" type="submit" data-i18n="home-search-btn">Search</button>
             </div>
-            <div id="suggestions" class="suggestions"></div>
-        </div>
+            <p id="search-help" class="helper-text" data-i18n="home-search-help">Use at least 2 letters. Pick a suggestion for best accuracy.</p>
+            <div id="suggestions" class="suggestions" role="listbox" aria-label="City suggestions"></div>
+            <p id="search-status" class="status-line" role="status" aria-live="polite"></p>
+        </form>
     </div>
+
+    <aside class="hero-aside card">
+        <h2 class="section-title" data-i18n="home-what-title">What you get</h2>
+        <ul class="feature-list">
+            <li data-i18n="home-what-1">Current conditions with key metrics</li>
+            <li data-i18n="home-what-2">5-day forecast cards and trend chart</li>
+            <li data-i18n="home-what-3">Interactive map and recent search history</li>
+            <li data-i18n="home-what-4">Saved city flow for account and guest mode</li>
+        </ul>
+    </aside>
+</section>
+
+<section id="empty-state" class="empty-state card">
+    <h2 class="section-title" data-i18n="home-empty-title">Ready when you are</h2>
+    <p class="card-caption" data-i18n="home-empty-body">
+        Search a city to load the dashboard. Recent searches and saved items help you return faster.
+    </p>
 </section>
 
 <section id="content-section" class="content-section hidden">
     <div class="layout-grid">
-        <!-- LEFT: main cards -->
         <div class="left-column">
-            <div id="current-weather" class="card card-main hidden"></div>
+            <article id="current-weather" class="card card-main hidden"></article>
 
-            <div id="metrics" class="card metrics-card hidden"></div>
+            <section id="metrics" class="card metrics-card hidden"></section>
 
-            <div class="card">
-                <h2 class="section-title">5-Day Forecast</h2>
-                <div id="forecast-cards" class="forecast-cards"></div>
-            </div>
+            <section class="card micro-metrics hidden" id="micro-metrics">
+                <div class="micro-metric">
+                    <span class="metric-label" data-i18n="metric-aqi">AQI</span>
+                    <span class="metric-value" id="aqi-value">--</span>
+                </div>
+                <div class="micro-metric">
+                    <span class="metric-label" data-i18n="metric-pop">Precip %</span>
+                    <span class="metric-value" id="pop-value">--</span>
+                </div>
+                <div class="micro-metric">
+                    <span class="metric-label" data-i18n="metric-sunrise">Sunrise</span>
+                    <span class="metric-value" id="sunrise-value">--</span>
+                </div>
+                <div class="micro-metric">
+                    <span class="metric-label" data-i18n="metric-sunset">Sunset</span>
+                    <span class="metric-value" id="sunset-value">--</span>
+                </div>
+            </section>
 
-            <div class="card">
+            <section class="card">
                 <div class="card-header">
-                    <h2 class="section-title">Temperature Chart</h2>
+                    <h2 class="section-title">5-Day Forecast</h2>
+                    <span class="card-caption">Daily snapshots from 3-hour forecast data</span>
+                </div>
+                <div id="forecast-cards" class="forecast-cards"></div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="section-title">Temperature Trend</h2>
                     <span class="card-caption">3-hour steps for the next 5 days</span>
                 </div>
                 <div class="chart-wrap">
                     <canvas id="temp-chart"></canvas>
                 </div>
-            </div>
+            </section>
         </div>
 
-        <!-- RIGHT: map + history -->
-        <div class="right-column">
-            <div class="card">
-                <h2 class="section-title">Map</h2>
+        <aside class="right-column">
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="section-title">Map</h2>
+                    <span id="map-caption" class="card-caption">Location context</span>
+                </div>
                 <div id="map" class="map"></div>
-            </div>
+                <p id="map-fallback" class="status-line hidden"></p>
+            </section>
 
-            <div class="card">
-                <h2 class="section-title">Previous searches</h2>
+            <section class="card">
+                <h2 class="section-title">Recent Searches</h2>
                 <ul id="prev-list" class="prev-list"></ul>
-            </div>
-        </div>
+            </section>
+
+            <section class="card">
+                <h2 class="section-title">Save Current City</h2>
+                <p id="save-hint" class="card-caption">
+                    {% if current_user.is_authenticated %}
+                        Save this city to your account for quick access later.
+                    {% else %}
+                        In guest mode, cities are stored locally in this browser.
+                    {% endif %}
+                </p>
+                <button id="save-city-btn" class="btn btn-secondary" type="button" disabled>Save current city</button>
+                <p id="save-status" class="status-line" role="status" aria-live="polite"></p>
+            </section>
+        </aside>
     </div>
 </section>
-
 {% endblock %}

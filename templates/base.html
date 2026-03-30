@@ -2,70 +2,95 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title or 'Q Weather' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}QWeather | Premium Forecast Dashboard{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Real-time weather forecasts with clean visual analytics, saved cities, and reliable search.{% endblock %}">
+    <meta name="theme-color" content="#0c111f">
 
-    <!-- Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block extra_head %}{% endblock %}
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
-
-    <!-- Leaflet -->
-<!-- Leaflet -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-/>
-<script
-  src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-></script>
-
-    <!-- Main JS (defer so HTML renders first) -->
+    {% block vendor_scripts %}{% endblock %}
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 </head>
-<body class="dark">
-    <!-- NAVBAR -->
-    <header class="navbar">
-        <div class="nav-left">
-            <a href="{{ url_for('home') }}" class="logo">Q&nbsp;Weather</a>
-        </div>
+<body class="dark route-{{ request.endpoint or 'unknown' }}" data-authenticated="{{ 'true' if current_user.is_authenticated else 'false' }}">
+    <a class="skip-link" href="#main-content">Skip to content</a>
 
-        <nav class="nav-center">
-            <a href="{{ url_for('home') }}" class="nav-link">Home</a>
-            <a href="{{ url_for('saved') }}" class="nav-link">Saved</a>
-            <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
+    <div class="app-shell">
+        <div class="ambient-layer" aria-hidden="true"></div>
+
+        <header class="navbar">
+            <div class="nav-left">
+                <a href="{{ url_for('home') }}" class="logo" aria-label="QWeather home">
+                    <span class="logo-mark" aria-hidden="true">Q</span>
+                    <span class="logo-text">QWeather</span>
+                </a>
+            </div>
+
+            <nav class="nav-center" aria-label="Primary navigation">
+                <a href="{{ url_for('home') }}" class="nav-link{% if request.endpoint == 'home' %} is-active{% endif %}" data-i18n="nav-home">Home</a>
+                <a href="{{ url_for('saved') }}" class="nav-link{% if request.endpoint == 'saved' %} is-active{% endif %}" data-i18n="nav-saved">Saved</a>
+                <a href="{{ url_for('contact') }}" class="nav-link{% if request.endpoint == 'contact' %} is-active{% endif %}" data-i18n="nav-contact">Contact</a>
+            </nav>
+
+            <div class="nav-right">
+                <div class="lang-select-wrap" role="group" aria-label="Language selector">
+                    <button class="lang-chip" data-lang="en">EN</button>
+                    <button class="lang-chip" data-lang="ru">RU</button>
+                    <button class="lang-chip" data-lang="kk">KZ</button>
+                </div>
+
+                <button id="theme-toggle" class="icon-button" type="button" aria-label="Toggle theme">◐</button>
+
+                {% if current_user.is_authenticated %}
+                    <span class="user-chip" title="Signed in">{{ current_user.email }}</span>
+                    <a href="{{ url_for('logout') }}" class="nav-link nav-action" data-i18n="nav-logout">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link{% if request.endpoint == 'login' %} is-active{% endif %}" data-i18n="nav-login">Login</a>
+                    <a href="{{ url_for('register') }}" class="nav-link nav-action{% if request.endpoint == 'register' %} is-active{% endif %}" data-i18n="nav-register">Register</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <nav class="mobile-nav" aria-label="Mobile navigation">
+            <a href="{{ url_for('home') }}" class="mobile-nav-link{% if request.endpoint == 'home' %} is-active{% endif %}" data-i18n="nav-home">Home</a>
+            <a href="{{ url_for('saved') }}" class="mobile-nav-link{% if request.endpoint == 'saved' %} is-active{% endif %}" data-i18n="nav-saved">Saved</a>
+            <a href="{{ url_for('contact') }}" class="mobile-nav-link{% if request.endpoint == 'contact' %} is-active{% endif %}" data-i18n="nav-contact">Contact</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="mobile-nav-link" data-i18n="nav-logout">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="mobile-nav-link{% if request.endpoint == 'login' %} is-active{% endif %}" data-i18n="nav-login">Login</a>
+            {% endif %}
         </nav>
 
-        <div class="nav-right">
-            <select id="lang-select" class="lang-select">
-                <option value="en">EN</option>
-                <option value="ru">RU</option>
-                <option value="kk">KZ</option>
-            </select>
+        <main id="main-content" class="page">
+            <div class="page-inner">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-stack" role="status" aria-live="polite">
+                            {% for category, message in messages %}
+                                <div class="flash flash-{{ category or 'info' }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
 
-            <button id="theme-toggle" class="icon-button" title="Toggle theme">🌙</button>
+                {% block content %}{% endblock %}
+            </div>
+        </main>
 
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
-            {% else %}
-                <a href="{{ url_for('login') }}" class="nav-link">Login</a>
-            {% endif %}
-        </div>
-    </header>
+        <footer class="footer">
+            <div class="footer-inner">
+                <p class="footer-copy">&copy; {{ current_year }} QWeather</p>
+                <p class="footer-note" data-i18n="footer-note">Reliable weather intelligence with clean UX.</p>
+            </div>
+        </footer>
+    </div>
 
-    <!-- PAGE CONTENT -->
-    <main class="page">
-        <div class="page-inner">
-            {% block content %}{% endblock %}
-        </div>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <span>&copy; {{ 2026 }} Q Weather. Made for study & chill.</span>
-        </div>
-    </footer>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

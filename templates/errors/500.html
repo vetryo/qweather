@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}QWeather | Server Error{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-main">
+        <p class="eyebrow">500 Error</p>
+        <h1 class="hero-title">Something went wrong</h1>
+        <p class="hero-subtitle">An unexpected server error occurred. Please try again in a moment.</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <article class="card">
+        <h2 class="section-title">Recovery options</h2>
+        <p class="card-caption">Return home or report the issue through the contact page.</p>
+        <div class="action-stack action-stack-spaced">
+            <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
+            <a href="{{ url_for('contact') }}" class="btn btn-secondary">Report issue</a>
+        </div>
+    </article>
+</section>
+{% endblock %}
+

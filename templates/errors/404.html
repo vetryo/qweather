@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}QWeather | Page Not Found{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-main">
+        <p class="eyebrow">404 Error</p>
+        <h1 class="hero-title">Page not found</h1>
+        <p class="hero-subtitle">The page you requested does not exist or was moved.</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <article class="card">
+        <h2 class="section-title">What to do next</h2>
+        <p class="card-caption">Use the links below to continue browsing.</p>
+        <div class="action-stack action-stack-spaced">
+            <a href="{{ url_for('home') }}" class="btn btn-primary">Go to Home</a>
+            <a href="{{ url_for('saved') }}" class="btn btn-secondary">Saved Cities</a>
+            <a href="{{ url_for('contact') }}" class="btn btn-ghost">Contact</a>
+        </div>
+    </article>
+</section>
+{% endblock %}
+

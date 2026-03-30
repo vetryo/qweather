@@ -1,46 +1,36 @@
 {% extends "base.html" %}
+
+{% block title %}QWeather | Login{% endblock %}
+{% block meta_description %}Login to sync saved cities and access your personalized weather dashboard.{% endblock %}
+
 {% block content %}
-
-<section class="hero">
+<section class="hero auth-hero">
     <div class="hero-main">
-        <h1 class="hero-title">Login</h1>
-        <p class="hero-subtitle">
-            Access your saved cities and personalized weather dashboard.
-        </p>
+        <p class="eyebrow" data-i18n="login-eyebrow">Account Access</p>
+        <h1 class="hero-title" data-i18n="login-title">Welcome back</h1>
+        <p class="hero-subtitle" data-i18n="login-subtitle">Sign in to sync saved cities and keep your forecast workflow consistent.</p>
     </div>
 </section>
 
-<section class="content-section">
-    <div class="card" style="max-width: 520px; margin: 0 auto;">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div style="margin-bottom: .8rem; padding: .75rem; border-radius: 12px; background: rgba(255,107,107,.12); border:1px solid rgba(255,107,107,.25); color: var(--fg);">
-                    {{ messages[0] }}
-                </div>
-            {% endif %}
-        {% endwith %}
-
-        <h2 class="section-title">Welcome back</h2>
-
-        <form method="post" action="{{ url_for('login') }}" style="display:flex; flex-direction:column; gap:.9rem; margin-top:.75rem;">
+<section class="content-section auth-section">
+    <article class="card auth-card">
+        <h2 class="section-title" data-i18n="login-form-title">Login</h2>
+        <form method="post" action="{{ url_for('login') }}" class="stack-form" novalidate>
             <div>
-                <label for="email" class="metric-label" style="display:block; margin-bottom:.35rem;">Email</label>
-                <input id="email" name="email" type="email" required class="search-input" style="width:100%; border-radius:12px;">
+                <label for="email" class="input-label" data-i18n="login-email">Email</label>
+                <input id="email" name="email" type="email" class="text-input" required autocomplete="email" placeholder="you@example.com">
             </div>
 
             <div>
-                <label for="password" class="metric-label" style="display:block; margin-bottom:.35rem;">Password</label>
-                <input id="password" name="password" type="password" required class="search-input" style="width:100%; border-radius:12px;">
+                <label for="password" class="input-label" data-i18n="login-password">Password</label>
+                <input id="password" name="password" type="password" class="text-input" required autocomplete="current-password" placeholder="Your password">
             </div>
 
-            <button type="submit" class="primary-button" style="width:fit-content;">Login</button>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" data-i18n="login-btn">Login</button>
+                <a href="{{ url_for('register') }}" class="btn btn-ghost" data-i18n="cta-register">Create account</a>
+            </div>
         </form>
-
-        <p class="card-caption" style="margin-top: 1rem;">
-            Don’t have an account?
-            <a href="{{ url_for('register') }}" class="nav-link" style="padding:.2rem .35rem;">Register</a>
-        </p>
-    </div>
+    </article>
 </section>
-
 {% endblock %}
