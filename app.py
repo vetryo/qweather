@@ -40,6 +40,17 @@ def inject_template_globals():
     return {'current_year': datetime.datetime.utcnow().year}
 
 
+def ensure_database_ready():
+    try:
+        db.create_all()
+    except Exception:
+        db.session.rollback()
+
+
+with app.app_context():
+    ensure_database_ready()
+
+
 def is_safe_redirect_url(target):
     if not target:
         return False

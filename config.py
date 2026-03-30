@@ -5,7 +5,12 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
 
-DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///qweather.db')
+default_database_url = 'sqlite:///qweather.db'
+if os.getenv('VERCEL'):
+    # Vercel's deployment filesystem is read-only outside /tmp.
+    default_database_url = 'sqlite:////tmp/qweather.db'
+
+DATABASE_URL = os.getenv('DATABASE_URL', default_database_url)
 SQLALCHEMY_DATABASE_URI = DATABASE_URL
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
