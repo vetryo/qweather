@@ -21,7 +21,7 @@ const TRANSLATIONS = {
         'nav-login': 'Login',
         'nav-register': 'Register',
         'nav-logout': 'Logout',
-        'footer-note': 'Reliable weather intelligence with clean UX and portfolio-grade engineering.',
+        'footer-note': 'Reliable weather intelligence with clean UX.',
         'home-eyebrow': 'Weather Intelligence',
         'home-title': 'Plan the day with confidence.',
         'home-subtitle': 'Search any city and instantly get a clean, high-signal forecast view with current conditions, trend chart, map context, and quick saving.',
