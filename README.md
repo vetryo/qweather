@@ -37,6 +37,15 @@ QWeather is a Flask weather dashboard portfolio project with modern UI, resilien
    - `OPENWEATHER_API_KEY=...`
    - `SECRET_KEY=...` (recommended)
    - Optional: `CACHE_MINUTES`, `REQUEST_TIMEOUT_SECONDS`, `DATABASE_URL`
+   - Contact email delivery:
+   - `CONTACT_INBOX_EMAIL=...`
+   - `SMTP_HOST=...`
+   - `SMTP_PORT=587`
+   - `SMTP_USERNAME=...`
+   - `SMTP_PASSWORD=...`
+   - `SMTP_FROM_EMAIL=...`
+   - `SMTP_USE_TLS=true`
+   - `SMTP_USE_SSL=false`
 4. Run:
    - `python app.py`
 
@@ -44,3 +53,4 @@ QWeather is a Flask weather dashboard portfolio project with modern UI, resilien
 
 - `Werkzeug==2.3.8` is pinned for Flask 2.3 compatibility.
 - SQLite is used by default (`instance/qweather.db`) unless `DATABASE_URL` is provided.
+- The contact form always saves to the database first; email notifications are sent when SMTP variables are configured.

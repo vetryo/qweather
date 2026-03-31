@@ -3,6 +3,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def env_flag(name, default='false'):
+    return os.getenv(name, default).strip().lower() in {'1', 'true', 'yes', 'on'}
+
+
 SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
 
 default_database_url = 'sqlite:///qweather.db'
@@ -23,3 +28,12 @@ if not OPENWEATHER_API_KEY:
 
 CACHE_MINUTES = int(os.getenv('CACHE_MINUTES', '30'))
 REQUEST_TIMEOUT_SECONDS = int(os.getenv('REQUEST_TIMEOUT_SECONDS', '8'))
+
+CONTACT_INBOX_EMAIL = os.getenv('CONTACT_INBOX_EMAIL', '').strip()
+SMTP_HOST = os.getenv('SMTP_HOST', '').strip()
+SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
+SMTP_USERNAME = os.getenv('SMTP_USERNAME', '').strip()
+SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+SMTP_FROM_EMAIL = os.getenv('SMTP_FROM_EMAIL', SMTP_USERNAME or CONTACT_INBOX_EMAIL).strip()
+SMTP_USE_TLS = env_flag('SMTP_USE_TLS', 'true')
+SMTP_USE_SSL = env_flag('SMTP_USE_SSL', 'false')

@@ -2,7 +2,10 @@ import datetime
 import json
 import os
 import re
+import smtplib
+import ssl
 from urllib.parse import urljoin, urlparse
+from email.message import EmailMessage
 
 import requests
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
@@ -70,6 +73,70 @@ def normalized_language(lang):
 
 def request_timeout():
     return int(app.config.get('REQUEST_TIMEOUT_SECONDS', DEFAULT_TIMEOUT))
+
+
+def contact_email_configured():
+    required = (
+        app.config.get('CONTACT_INBOX_EMAIL'),
+        app.config.get('SMTP_HOST'),
+        app.config.get('SMTP_FROM_EMAIL'),
+    )
+    return all(required)
+
+
+def send_contact_email_notification(name, email, message, message_id):
+    if not contact_email_configured():
+        return False, 'Email notification is not configured on the server.'
+
+    inbox = app.config['CONTACT_INBOX_EMAIL']
+    sender = app.config['SMTP_FROM_EMAIL']
+    subject = f'QWeather contact message #{message_id}'
+
+    email_message = EmailMessage()
+    email_message['Subject'] = subject
+    email_message['From'] = sender
+    email_message['To'] = inbox
+    email_message['Reply-To'] = email
+    email_message.set_content(
+        '\n'.join(
+            [
+                'New contact message from QWeather',
+                '',
+                f'Message ID: {message_id}',
+                f'Name: {name}',
+                f'Email: {email}',
+                '',
+                'Message:',
+                message,
+            ]
+        )
+    )
+
+    host = app.config['SMTP_HOST']
+    port = app.config['SMTP_PORT']
+    username = app.config.get('SMTP_USERNAME')
+    password = app.config.get('SMTP_PASSWORD')
+
+    try:
+        if app.config.get('SMTP_USE_SSL'):
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(host, port, timeout=request_timeout(), context=context) as server:
+                if username and password:
+                    server.login(username, password)
+                server.send_message(email_message)
+        else:
+            with smtplib.SMTP(host, port, timeout=request_timeout()) as server:
+                if app.config.get('SMTP_USE_TLS'):
+                    context = ssl.create_default_context()
+                    server.starttls(context=context)
+                if username and password:
+                    server.login(username, password)
+                server.send_message(email_message)
+    except Exception as exc:
+        app.logger.exception('Contact email delivery failed')
+        return False, str(exc)
+
+    return True, None
 
 
 def prefers_json_response():
@@ -382,6 +449,15 @@ def api_contact():
         if prefers_json_response():
             return jsonify({'error': 'Message could not be saved'}), 500
         flash('Message could not be saved. Please try again.', 'error')
+        return redirect(url_for('contact'))
+
+    email_sent, email_error = send_contact_email_notification(name, email, message, contact_message.id)
+
+    if not email_sent:
+        saved_only_message = 'Message saved to the database, but email notification could not be sent.'
+        if prefers_json_response():
+            return jsonify({'status': 'saved_only', 'message': saved_only_message, 'email_error': email_error}), 202
+        flash(saved_only_message, 'warning')
         return redirect(url_for('contact'))
 
     if prefers_json_response():

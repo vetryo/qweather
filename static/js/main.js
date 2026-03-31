@@ -50,7 +50,7 @@ const TRANSLATIONS = {
         'contact-email-label': 'Email',
         'contact-message-label': 'Message',
         'contact-send': 'Send message',
-        'contact-storage': 'Stored securely in the local database.',
+        'contact-storage': 'Saved to the project database and sent to the configured inbox.',
         'login-eyebrow': 'Account Access',
         'login-title': 'Welcome back',
         'login-subtitle': 'Sign in to sync saved cities and keep your forecast workflow consistent.',
@@ -115,7 +115,7 @@ const TRANSLATIONS = {
         'contact-email-label': 'Email',
         'contact-message-label': 'Сообщение',
         'contact-send': 'Отправить',
-        'contact-storage': 'Хранится безопасно в базе данных.',
+        'contact-storage': 'Сохраняется в базе данных проекта и отправляется на настроенную почту.',
         'login-eyebrow': 'Доступ',
         'login-title': 'С возвращением',
         'login-subtitle': 'Войдите, чтобы синхронизировать сохраненные города.',
@@ -180,7 +180,7 @@ const TRANSLATIONS = {
         'contact-email-label': 'Email',
         'contact-message-label': 'Хабарлама',
         'contact-send': 'Жіберу',
-        'contact-storage': 'Дерекқорда қауіпсіз сақталады.',
+        'contact-storage': 'Жоба дерекқорына сақталып, бапталған поштаға жіберіледі.',
         'login-eyebrow': 'Қатынау',
         'login-title': 'Қайта келдіңіз',
         'login-subtitle': 'Сақталған қалаларды синхрондау үшін кіріңіз.',
@@ -1128,7 +1128,8 @@ function initContactForm() {
                 body: JSON.stringify(payload)
             });
 
-            setStatus(status, result.message || 'Message sent successfully.', 'success');
+            const statusType = result.status === 'saved_only' ? 'warning' : 'success';
+            setStatus(status, result.message || 'Message sent successfully.', statusType);
             form.reset();
         } catch (error) {
             setStatus(status, error.message || 'Failed to send message.', 'error');
